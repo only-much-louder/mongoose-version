@@ -80,7 +80,7 @@ describe('clone-schema', function() {
     expect(datePath.validators.length).to.equal(1);
   });
 
-  it('should clone all schema path without indexes when authIndex is set to false', function() {
+  it('should clone all schema path without indexes when autoIndex is set to false', function() {
     var TTL_DURATION = 1000;
     var testSchema = new Schema({
       name: { type: String, index: true },
@@ -101,7 +101,7 @@ describe('clone-schema', function() {
     expect(datePath._index).to.equal(null);
   });
 
-  it('should clone all schema path with indexes when authIndex is set to true', function() {
+  it('should clone all schema path with indexes when autoIndex is set to true', function() {
     var TTL_DURATION = 1000;
     var testSchema = new Schema({
       name: { type: String, index: true },
