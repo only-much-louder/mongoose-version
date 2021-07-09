@@ -28,7 +28,9 @@ describe('version', function() {
       logError: true,
       strategy: "collection",
       autoIndex: false,
-      ttlDuration: TTL_DURATION
+      customOpts: {
+        ttlDuration: TTL_DURATION
+      }
     });
 
     var Test = mongoose.model("test", testSchema);
@@ -104,19 +106,29 @@ describe('version', function() {
     }).to.throw(Error);
   });
 
-  it('should throw for `ttlDuration` not a number', function() {
+  it("should throw for `ttlDuration` not a number", function () {
     var testSchema = new Schema({ name: String });
 
-    expect(function() {
-      testSchema.plugin(version, { strategy: 'collection', ttlDuration: 'abc' });
+    expect(function () {
+      testSchema.plugin(version, {
+        strategy: "collection",
+        customOpts: {
+          ttlDuration: "abc",
+        },
+      });
     }).to.throw(Error);
   });
 
   it('should throw for `ttlDuration` -ive number', function() {
     var testSchema = new Schema({ name: String });
 
-    expect(function() {
-      testSchema.plugin(version, { strategy: 'collection', ttlDuration: -10 });
+    expect(function () {
+      testSchema.plugin(version, {
+        strategy: "collection",
+        customOpts: {
+          ttlDuration: -10,
+        },
+      });
     }).to.throw(Error);
   });
 

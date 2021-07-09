@@ -21,7 +21,7 @@ describe('set-schema-options', function() {
   it('should not set `ttlDuration` on options, for passed schema', function() {
     var TTL_DURATION = 10000;
     var testSchema = new Schema({ name: String, date: Date });
-    var options = { ttlDuration: TTL_DURATION, option: true };
+    var options = { customOpts: { ttlDuration: TTL_DURATION }, option: true };
 
     setSchemaOptions(testSchema, options);
 
