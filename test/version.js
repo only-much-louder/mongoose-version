@@ -19,27 +19,58 @@ describe('version', function() {
       expect(Test.VersionedModel).to.be.ok;
     });
   });
-  
-  it('should add ttl to version collection when passed `ttlDuration` in options', function() {
-    var TTL_DURATION = 10000;
-    var testSchema = new Schema({ name: String });
-    testSchema.plugin(version, { 
-      collection: "test__versions",
-      logError: true,
-      strategy: "collection",
-      autoIndex: false,
-      customOpts: {
-        ttlDuration: TTL_DURATION
-      }
+
+  describe("customOpts", function () {
+    it("should add ttl to version collection when passed `ttlDuration` options.customOpts", function () {
+      var TTL_DURATION = 10000;
+      var testSchema = new Schema({ name: String });
+      testSchema.plugin(version, {
+        collection: "test__versions",
+        logError: true,
+        strategy: "collection",
+        autoIndex: false,
+        customOpts: {
+          ttlDuration: TTL_DURATION,
+        },
+      });
+
+      var Test = mongoose.model("test", testSchema);
+      var versionCreatedAtPath =
+        Test.VersionedModel.schema.path("versionCreatedAt");
+
+      expect(versionCreatedAtPath).to.exist;
+      expect(versionCreatedAtPath.options.expires).to.be.equal(TTL_DURATION);
+      expect(versionCreatedAtPath._index.expireAfterSeconds).to.be.equal(
+        TTL_DURATION
+      );
+      expect(versionCreatedAtPath._index.background).to.be.equal(true);
     });
 
-    var Test = mongoose.model("test", testSchema);
-    var versionCreatedAtPath = Test.VersionedModel.schema.path('versionCreatedAt');
+    it("should throw for `ttlDuration` not a number", function () {
+      var testSchema = new Schema({ name: String });
 
-    expect(versionCreatedAtPath).to.exist;
-    expect(versionCreatedAtPath.options.expires).to.be.equal(TTL_DURATION);
-    expect(versionCreatedAtPath._index.expireAfterSeconds).to.be.equal(TTL_DURATION);
-    expect(versionCreatedAtPath._index.background).to.be.equal(true);
+      expect(function () {
+        testSchema.plugin(version, {
+          strategy: "collection",
+          customOpts: {
+            ttlDuration: "abc",
+          },
+        });
+      }).to.throw(Error);
+    });
+
+    it("should throw for `ttlDuration` -ive number", function () {
+      var testSchema = new Schema({ name: String });
+
+      expect(function () {
+        testSchema.plugin(version, {
+          strategy: "collection",
+          customOpts: {
+            ttlDuration: -10,
+          },
+        });
+      }).to.throw(Error);
+    });
   });
 
   it('should save a version model when saving origin model', function(done) {
@@ -103,32 +134,6 @@ describe('version', function() {
 
     expect(function() {
       testSchema.plugin(version, { strategy: 'hugo' });
-    }).to.throw(Error);
-  });
-
-  it("should throw for `ttlDuration` not a number", function () {
-    var testSchema = new Schema({ name: String });
-
-    expect(function () {
-      testSchema.plugin(version, {
-        strategy: "collection",
-        customOpts: {
-          ttlDuration: "abc",
-        },
-      });
-    }).to.throw(Error);
-  });
-
-  it('should throw for `ttlDuration` -ive number', function() {
-    var testSchema = new Schema({ name: String });
-
-    expect(function () {
-      testSchema.plugin(version, {
-        strategy: "collection",
-        customOpts: {
-          ttlDuration: -10,
-        },
-      });
     }).to.throw(Error);
   });
 

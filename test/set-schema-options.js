@@ -18,14 +18,16 @@ describe('set-schema-options', function() {
     setSchemaOptions(testSchema);
   });
 
-  it('should not set `ttlDuration` on options, for passed schema', function() {
-    var TTL_DURATION = 10000;
-    var testSchema = new Schema({ name: String, date: Date });
-    var options = { customOpts: { ttlDuration: TTL_DURATION }, option: true };
+  describe("customOpts", function () {
+    it("should not set `ttlDuration` on options, for passed schema", function () {
+      var TTL_DURATION = 10000;
+      var testSchema = new Schema({ name: String, date: Date });
+      var options = { customOpts: { ttlDuration: TTL_DURATION }, option: true };
 
-    setSchemaOptions(testSchema, options);
+      setSchemaOptions(testSchema, options);
 
-    expect(testSchema.get('ttlDuration')).to.equal(undefined);
-    expect(testSchema.get('option')).to.equal(true);
+      expect(testSchema.get("ttlDuration")).to.equal(undefined);
+      expect(testSchema.get("option")).to.equal(true);
+    });
   });
 });
