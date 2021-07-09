@@ -79,4 +79,46 @@ describe('clone-schema', function() {
     expect(datePath.options.validate).to.equal(validator);
     expect(datePath.validators.length).to.equal(1);
   });
+
+  it('should clone all schema path without indexes when autoIndex is set to false', function() {
+    var TTL_DURATION = 1000;
+    var testSchema = new Schema({
+      name: { type: String, index: true },
+      date: { type: Date, expires: TTL_DURATION }
+    });
+    var options = {
+      autoIndex: false
+    };
+
+    var cloned = cloneSchema(testSchema, null, options);
+
+    var namePath = cloned.path('name');
+    expect(namePath.options.index).to.equal(undefined);
+    expect(namePath._index).to.equal(null);
+
+    var datePath = cloned.path('date');
+    expect(datePath.options.expires).to.equal(undefined);
+    expect(datePath._index).to.equal(null);
+  });
+
+  it('should clone all schema path with indexes when autoIndex is set to true', function() {
+    var TTL_DURATION = 1000;
+    var testSchema = new Schema({
+      name: { type: String, index: true },
+      date: { type: Date, expires: TTL_DURATION }
+    });
+    var options = {
+      autoIndex: true
+    };
+
+    var cloned = cloneSchema(testSchema, null, options);
+
+    var namePath = cloned.path('name');
+    expect(namePath.options.index).to.equal(true);
+    expect(namePath._index).to.equal(true);
+
+    var datePath = cloned.path('date');
+    expect(datePath.options.expires).to.equal(TTL_DURATION);
+    expect(datePath._index.expireAfterSeconds).to.equal(TTL_DURATION);
+  });
 });
